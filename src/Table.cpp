@@ -41,7 +41,7 @@ void	Table::payout(void)
 		std::cout << hand.get_bet() << std::endl;
 		if (hand.is_blackjack() && !dealer.is_blackjack()) // Joueur fait blackjack
 			player.blackjack(hand.get_bet());
-		else if (dealer.is_blackjack())
+		else if (dealer.is_blackjack() && !hand.is_blackjack())
 			player.lose();
 		else if (std::get<0>(hand.get_count()) > 21) // Joueur bust
 			player.lose();
@@ -86,8 +86,10 @@ void	Table::player_turn()
 		h->pretty_print();
 		end_hand = false;
 		while (std::get<0>(h->get_count()) < 21 && !end_hand) {
-			if (h->get_card_count() == 1)
+			if (h->get_card_count() == 1) {
 				h->add_card(shoe.draw());
+				continue;
+			}
 			h->dump();
 			std::cout << "Enter your action: Stand/Hit/Double/sPlit:" << std::endl;
 			std::getline(std::cin, line);
@@ -99,10 +101,9 @@ void	Table::player_turn()
 					h->add_card(shoe.draw());
 					break;
 				case 'D':
-					if (player.get_stack() >= player.get_bet() && h->get_card_count() == 2) {
+					if (h->get_card_count() == 2 && player.bet(player.get_bet())) {
 						h->add_card(shoe.draw());
 						h->set_bet(h->get_bet() * 2);
-						player.bet(player.get_bet());
 						end_hand = true;
 					} else if (h->get_card_count() != 2) {
 						std::cout << "Can't double after a Hit !" << std::endl;
@@ -115,13 +116,12 @@ void	Table::player_turn()
 						std::cout << "Invalid split" << std::endl;
 					else { // Il faut gérer la balance
 
-						if (player.get_stack() >= player.get_bet())
+						if (player.bet(player.get_bet()))
 						{
 							Card c = h->split();
 
 							h->add_card(shoe.draw());
 							hands.push_back(Hand(player.get_bet()));
-							player.bet(player.get_bet());
 							hands.back().add_card(c);
 							h = &hands[i];
 							std::cout << "1st ";
