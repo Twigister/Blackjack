@@ -111,7 +111,7 @@ void	Table::player_turn()
 					}
 					break;
 				case 'P':
-					if (!h->is_double())
+					/*if (!h->is_double())
 						std::cout << "Invalid split" << std::endl;
 					else { // Il faut gérer la balance
 						hands.push_back(Hand(player.get_bet()));
@@ -122,7 +122,8 @@ void	Table::player_turn()
 						h->dump();
 						std::cout << "2nd hand: ";	
 						hands.back().dump();
-					}
+					}*/
+					std::cout << "WIP" << std::endl;
 					break;
 				default:
 					std::cout << "Invalid input" << std::endl;
