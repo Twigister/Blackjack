@@ -84,10 +84,10 @@ void	Table::player_turn()
 	for (size_t i = 0; i < hands.size(); i++) { // Hand &h : hands
 		Hand *h = &hands[i];
 		h->pretty_print();
-		if (h->get_card_count() == 1)
-			h->add_card(shoe.draw());
 		end_hand = false;
 		while (std::get<0>(h->get_count()) < 21 && !end_hand) {
+			if (h->get_card_count() == 1)
+				h->add_card(shoe.draw());
 			h->dump();
 			std::cout << "Enter your action: Stand/Hit/Double/sPlit:" << std::endl;
 			std::getline(std::cin, line);
@@ -111,19 +111,31 @@ void	Table::player_turn()
 					}
 					break;
 				case 'P':
-					/*if (!h->is_double())
+					if (!h->is_double())
 						std::cout << "Invalid split" << std::endl;
 					else { // Il faut gérer la balance
+						Card c = h->split();
+
+						h->add_card(shoe.draw());
 						hands.push_back(Hand(player.get_bet()));
+						player.bet(player.get_bet());
+						hands.back().add_card(c);
+						h = &hands[i];
+						std::cout << "1st ";
+						h->dump();
+						std::cout << "2nd ";
+						hands.back().dump();
+												
+						/*hands.push_back(Hand(player.get_bet()));
 						player.bet(player.get_bet());
 						hands.back().add_card(h->split());
 						h->add_card(shoe.draw());
 						std::cout << "1st hand: ";
 						h->dump();
 						std::cout << "2nd hand: ";	
-						hands.back().dump();
-					}*/
-					std::cout << "WIP" << std::endl;
+						hands.back().dump();*/
+						std::cout << "WIP" << std::endl;
+					}
 					break;
 				default:
 					std::cout << "Invalid input" << std::endl;

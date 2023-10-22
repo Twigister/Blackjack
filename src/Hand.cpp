@@ -21,6 +21,8 @@ Card	Hand::split(void)
 	Card	card(cards.back());
 
 	cards.pop_back();
+	std::cout << cards.size() << " Wesh gros" << std::endl;
+	dump();
 	return card;
 }
 
@@ -71,6 +73,7 @@ void	Hand::clear(void)
 void	Hand::dump(void)
 {
 	std::cout << "Hand data:" << std::endl;
+	std::cout << cards.size() << " cards in the hand" << std::endl;
 	for (auto i : cards)
 		std::cout << VALUES[(int)i.get_value()] << SUITS[(int)i.get_suit()]	 << ' ';
 	std::cout << std::endl;
