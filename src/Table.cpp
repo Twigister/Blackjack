@@ -16,9 +16,22 @@ void	Table::dealer_play()
 {
 	std::cout << "Dealer's turn!" << std::endl;
 	dealer.pretty_print();
-	while (std::get<0>(dealer.get_count()) < 17)
-		dealer.add_card(shoe.draw());
-	dealer.pretty_print();
+	while (std::get<0>(dealer.get_count()) < 17) {
+		Card c = shoe.draw();
+		
+		std::cout << "Dealer hits a: ";
+		c.dump();
+		dealer.add_card(c);
+		dealer.pretty_print();
+	}
+	if (dealer.get_hard_count() > 21) {
+		std::cout << "Dealer busts" << std::endl;
+	} else if (dealer.is_blackjack()) {
+		std::cout << "Dealer has a Blackjack" << std::endl;
+	} else {
+		std::cout << "Dealer stands on: ";
+		dealer.pretty_print();
+	}
 }
 
 void	Table::deal()
@@ -35,25 +48,34 @@ void	Table::deal()
 
 void	Table::payout(void)
 {
-	for (Hand &hand : player.get_hands())
-	{
-		hand.dump();
-		std::cout << hand.get_bet() << std::endl;
-		if (hand.is_blackjack() && !dealer.is_blackjack()) // Joueur fait blackjack
+	int	wins = 0;
+
+	for (Hand &hand : player.get_hands()) {
+		int	hand_bet = hand.get_bet();
+
+		if (hand.is_blackjack() && !dealer.is_blackjack()) {
 			player.blackjack(hand.get_bet());
-		else if (dealer.is_blackjack() && !hand.is_blackjack())
+			wins += hand_bet * 3 / 2;
+		} else if (dealer.is_blackjack() && !hand.is_blackjack()) {
 			player.lose();
-		else if (std::get<0>(hand.get_count()) > 21) // Joueur bust
+			wins -= hand_bet;
+		} else if (std::get<0>(hand.get_count()) > 21) {
 			player.lose();
-		else if (std::get<0>(dealer.get_count()) > 21) // Dealer bust : OK
+			wins -= hand_bet;
+		} else if (std::get<0>(dealer.get_count()) > 21){
 			player.win(hand.get_bet());
-		else if (std::get<0>(hand.get_count()) < std::get<0>(dealer.get_count())) // 
+			wins += hand_bet;
+		} else if (std::get<0>(hand.get_count()) < std::get<0>(dealer.get_count())) {
 			player.lose();
-		else if (std::get<0>(hand.get_count()) > std::get<0>(dealer.get_count()))
+			wins -= hand_bet;
+		} else if (std::get<0>(hand.get_count()) > std::get<0>(dealer.get_count())) {
 			player.win(hand.get_bet());
-		else
+			wins += hand_bet;
+		} else {
 			player.push(hand.get_bet());
+		}
 	}
+	std::cout << "Round result: " << wins << " your new balance is: " << player.get_stack() << std::endl;
 }
 
 void	Table::player_bet(void)
@@ -66,7 +88,7 @@ void	Table::player_bet(void)
 		std::getline(std::cin, line);
 		num = std::stoi(line);
 		if (player.bet(num)) {
-			std::cout << "Betting " << num << std::endl;
+			std::cout << "Betting " << num << std::endl << std::endl;
 			break;
 		} else {
 			std::cout << "Invalid bet" << std::endl;
@@ -83,14 +105,17 @@ void	Table::player_turn()
 	std::cout << "Player's turn" << std::endl;
 	for (size_t i = 0; i < hands.size(); i++) { // Hand &h : hands
 		Hand *h = &hands[i];
-		h->pretty_print();
 		end_hand = false;
 		while (std::get<0>(h->get_count()) < 21 && !end_hand) {
 			if (h->get_card_count() == 1) {
 				h->add_card(shoe.draw());
 				continue;
 			}
-			h->dump();
+			std::cout << "Your hand:" << std::endl;
+			h->pretty_print();
+			std::cout << "Dealer upcard: ";
+			dealer.print_cards();
+			std::cout << std::endl;
 			std::cout << "Enter your action: Stand/Hit/Double/sPlit:" << std::endl;
 			std::getline(std::cin, line);
 			switch (line[0]) {
@@ -114,8 +139,7 @@ void	Table::player_turn()
 				case 'P':
 					if (!h->is_double())
 						std::cout << "Invalid split" << std::endl;
-					else { // Il faut gérer la balance
-
+					else {
 						if (player.bet(player.get_bet()))
 						{
 							Card c = h->split();
@@ -125,9 +149,9 @@ void	Table::player_turn()
 							hands.back().add_card(c);
 							h = &hands[i];
 							std::cout << "1st ";
-							h->dump();
+							h->pretty_print();
 							std::cout << "2nd ";
-							hands.back().dump();
+							hands.back().pretty_print();
 						} else {
 							std::cout << "Insuficcient funds" << std::endl;
 						}
@@ -137,6 +161,12 @@ void	Table::player_turn()
 					std::cout << "Invalid input" << std::endl;
 			}
 			player.get_hands() = hands;
+			std::cout << std::endl;
+		}
+		if (h->get_hard_count() > 21) {
+			std::cout << "You bust!" << std::endl;
+		} else {
+			std::cout << "Standing on: " << h->get_soft_count() << std::endl;
 		}
 	}
 }
@@ -156,7 +186,6 @@ void	Table::round()
 	dealer_play();
 	payout();
 	clear_hands();
-	std::cout << player.get_stack() << std::endl << std::endl;
 }
 
 void	Table::play_shoe()

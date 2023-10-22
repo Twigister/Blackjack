@@ -7,8 +7,12 @@ Hand::~Hand() {}
 
 void	Hand::add_card(Card c)
 {
-	std::cout << "Drawing a " << VALUES[(int)c.get_value()] << SUITS[(int)c.get_suit()] << std::endl;
 	cards.push_back(c);
+}
+
+unsigned int	Hand::get_bet(void)
+{
+	return (bet);
 }
 
 void	Hand::set_bet(unsigned int wager)
@@ -21,7 +25,6 @@ Card	Hand::split(void)
 	Card	card(cards.back());
 
 	cards.pop_back();
-	std::cout << cards.size() << " Wesh gros" << std::endl;
 	dump();
 	return card;
 }
@@ -50,6 +53,16 @@ std::pair<unsigned int, unsigned int>	Hand::get_count()
 	return (std::make_pair(soft, hard));
 }
 
+unsigned int	Hand::get_soft_count(void)
+{
+	return (std::get<0>(get_count()));
+}
+
+unsigned int	Hand::get_hard_count(void)
+{
+	return (std::get<1>(get_count()));
+}
+
 int		Hand::get_card_count(void)
 {
 	return (cards.size());
@@ -57,7 +70,7 @@ int		Hand::get_card_count(void)
 
 bool	Hand::is_blackjack(void)
 {
-	return (std::get<0>(get_count()) == 21 && cards.size() == 2);
+	return (get_soft_count() == 21 && cards.size() == 2);
 }
 
 bool	Hand::is_double(void)
@@ -78,22 +91,23 @@ void	Hand::dump(void)
 		std::cout << VALUES[(int)i.get_value()] << SUITS[(int)i.get_suit()]	 << ' ';
 	std::cout << std::endl;
 	std::cout << "Total: ";
-	if (std::get<0>(get_count()) != std::get<1>(get_count()))
-		std::cout << std::get<0>(get_count()) << "/";
-	std::cout << std::get<1>(get_count()) << std::endl;
+	if (get_soft_count() != get_hard_count())
+		std::cout << get_soft_count() << "/";
+	std::cout << get_hard_count() << std::endl;
 }
 
 void	Hand::pretty_print(void)
 {
 	for (auto i : cards)
 		std::cout << VALUES[(int)i.get_value()] << SUITS[(int)i.get_suit()] << ' ';
-	std::cout << std::endl;
+	std::cout << "(";
 	if (std::get<0>(get_count()) != std::get<1>(get_count()))
 		std::cout << std::get<0>(get_count()) << "/";
-	std::cout << std::get<1>(get_count()) << std::endl;
+	std::cout << std::get<1>(get_count()) << ")" << std::endl;
 }
 
-unsigned int	Hand::get_bet(void)
+void	Hand::print_cards(void)
 {
-	return (bet);
+	for (auto c : cards)
+		std::cout << VALUES[(int)c.get_value()] << SUITS[(int)c.get_suit()] << " ";
 }
