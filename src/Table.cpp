@@ -114,27 +114,23 @@ void	Table::player_turn()
 					if (!h->is_double())
 						std::cout << "Invalid split" << std::endl;
 					else { // Il faut gérer la balance
-						Card c = h->split();
 
-						h->add_card(shoe.draw());
-						hands.push_back(Hand(player.get_bet()));
-						player.bet(player.get_bet());
-						hands.back().add_card(c);
-						h = &hands[i];
-						std::cout << "1st ";
-						h->dump();
-						std::cout << "2nd ";
-						hands.back().dump();
-												
-						/*hands.push_back(Hand(player.get_bet()));
-						player.bet(player.get_bet());
-						hands.back().add_card(h->split());
-						h->add_card(shoe.draw());
-						std::cout << "1st hand: ";
-						h->dump();
-						std::cout << "2nd hand: ";	
-						hands.back().dump();*/
-						std::cout << "WIP" << std::endl;
+						if (player.get_stack() >= player.get_bet())
+						{
+							Card c = h->split();
+
+							h->add_card(shoe.draw());
+							hands.push_back(Hand(player.get_bet()));
+							player.bet(player.get_bet());
+							hands.back().add_card(c);
+							h = &hands[i];
+							std::cout << "1st ";
+							h->dump();
+							std::cout << "2nd ";
+							hands.back().dump();
+						} else {
+							std::cout << "Insuficcient funds" << std::endl;
+						}
 					}
 					break;
 				default:
