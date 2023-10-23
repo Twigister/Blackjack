@@ -196,12 +196,11 @@ bool	Table::round()
 bool	Table::play_shoe()
 {
 	while (shoe.eos() == false) {
-		if (!round())
-			return (false);
-		if (player.get_stack() == 0) {
+		if (player.get_stack() < 0) {
 			std::cout << "You're broke buddy!" << std::endl;
 			return (false);
-		}
+		} else if (!round())
+			return (false);
 	}
 	return (true);
 }
