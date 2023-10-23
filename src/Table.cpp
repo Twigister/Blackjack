@@ -2,7 +2,7 @@
 #include <iostream>
 #include <utils.hpp>
 
-Table::Table(Player &p, unsigned int deck_count=4) : dealer(0), player(p), shoe(deck_count)
+Table::Table(Player &p, unsigned int deck_count=4) : dealer(0), shoe(deck_count), player(p)
 {
 	std::cout << "Launching a table!" << std::endl;
 	shoe.shuffle();
@@ -17,6 +17,7 @@ void	Table::dealer_play()
 {
 	std::cout << "Dealer's turn!" << std::endl;
 	dealer.pretty_print();
+	std::cout << std::endl;
 	while (std::get<0>(dealer.get_count()) < 17) {
 		Card c = shoe.draw();
 		
@@ -24,6 +25,7 @@ void	Table::dealer_play()
 		c.dump();
 		dealer.add_card(c);
 		dealer.pretty_print();
+		std::cout << std::endl;
 	}
 	if (dealer.get_hard_count() > 21) {
 		std::cout << "Dealer busts" << std::endl;
@@ -32,6 +34,7 @@ void	Table::dealer_play()
 	} else {
 		std::cout << "Dealer stands on: ";
 		dealer.pretty_print();
+		std::cout << std::endl;
 	}
 }
 
@@ -116,7 +119,7 @@ void	Table::player_turn()
 			}
 			std::cout << "Your hand:" << std::endl;
 			h->pretty_print();
-			std::cout << "Dealer upcard: ";
+			std::cout << std::endl << "Dealer upcard: ";
 			dealer.print_cards();
 			std::cout << std::endl;
 			std::cout << "Enter your action: Stand/Hit/Double/sPlit:" << std::endl;
@@ -133,6 +136,8 @@ void	Table::player_turn()
 						h->add_card(shoe.draw());
 						h->set_bet(h->get_bet() * 2);
 						end_hand = true;
+						h->pretty_print();
+						std::cout << std::endl;
 					} else if (h->get_card_count() != 2) {
 						std::cout << "Can't double after a Hit !" << std::endl;
 					} else {
@@ -167,9 +172,9 @@ void	Table::player_turn()
 			std::cout << std::endl;
 		}
 		if (h->get_hard_count() > 21) {
-			std::cout << "You bust!" << std::endl;
+			std::cout << "You bust!" << std::endl << std::endl;
 		} else {
-			std::cout << "Standing on: " << h->get_soft_count() << std::endl;
+			std::cout << "Standing on: " << h->get_soft_count() << std::endl << std::endl;
 		}
 	}
 }
@@ -196,7 +201,7 @@ bool	Table::round()
 bool	Table::play_shoe()
 {
 	while (shoe.eos() == false) {
-		if (player.get_stack() < 0) {
+		if (player.get_stack() <= 0) {
 			std::cout << "You're broke buddy!" << std::endl;
 			return (false);
 		} else if (!round())

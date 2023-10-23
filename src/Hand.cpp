@@ -103,7 +103,7 @@ void	Hand::pretty_print(void)
 	std::cout << "(";
 	if (std::get<0>(get_count()) != std::get<1>(get_count()))
 		std::cout << std::get<0>(get_count()) << "/";
-	std::cout << std::get<1>(get_count()) << ")" << std::endl;
+	std::cout << std::get<1>(get_count()) << ")";
 }
 
 void	Hand::print_cards(void)

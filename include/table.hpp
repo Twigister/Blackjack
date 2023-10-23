@@ -22,8 +22,8 @@ class Table {
 		void	new_shoe(int seed);
 	private:
 		Hand	dealer;
-		Player	&player;
 		Shoe	shoe;
+		Player	&player;
 };
 
 #endif
