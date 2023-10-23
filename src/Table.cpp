@@ -1,5 +1,6 @@
 #include <table.hpp>
 #include <iostream>
+#include <utils.hpp>
 
 Table::Table(Player &p, unsigned int deck_count=4) : dealer(0), player(p), shoe(deck_count)
 {
@@ -53,6 +54,7 @@ void	Table::payout(void)
 	for (Hand &hand : player.get_hands()) {
 		int	hand_bet = hand.get_bet();
 
+		hand.pretty_print();
 		if (hand.is_blackjack() && !dealer.is_blackjack()) {
 			player.blackjack(hand.get_bet());
 			wins += hand_bet * 3 / 2;
@@ -78,18 +80,19 @@ void	Table::payout(void)
 	std::cout << "Round result: " << wins << " your new balance is: " << player.get_stack() << std::endl;
 }
 
-void	Table::player_bet(void)
+bool	Table::player_bet(void)
 {
 	std::string		line;
 	unsigned int	num;
 
 	while (1) {
-		std::cout << "Enter your bet: ";
+		std::cout << "Enter your bet or STOP: ";
 		std::getline(std::cin, line);
-		num = std::stoi(line);
-		if (player.bet(num)) {
+		if (line == "STOP")
+			return (false);
+		if (is_number(line) && (num = std::stoi(line)) && player.bet(num)) {
 			std::cout << "Betting " << num << std::endl << std::endl;
-			break;
+			return (true);
 		} else {
 			std::cout << "Invalid bet" << std::endl;
 		}
@@ -177,21 +180,30 @@ void	Table::clear_hands()
 	dealer.clear();
 }
 
-void	Table::round()
+bool	Table::round()
 {
 	std::cout << "Starting a new round:" << std::endl;
-	player_bet();
+	if (!player_bet())
+		return (false);
 	deal();
 	player_turn();
 	dealer_play();
 	payout();
 	clear_hands();
+	return (true);
 }
 
-void	Table::play_shoe()
+bool	Table::play_shoe()
 {
-	while (shoe.eos() == false)
-		round();
+	while (shoe.eos() == false) {
+		if (!round())
+			return (false);
+		if (player.get_stack() == 0) {
+			std::cout << "You're broke buddy!" << std::endl;
+			return (false);
+		}
+	}
+	return (true);
 }
 
 void	Table::new_shoe(void)

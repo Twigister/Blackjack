@@ -9,20 +9,20 @@ class Table {
 		Table(Player &p, unsigned int deck_count);
 		~Table();
 
-		void	round();
-		void	player_bet(void);
+		bool	round();
+		bool	player_bet(void);
 		void	deal();
 		void	player_turn();
 		void	dealer_play();
 		void	payout();
 		void	clear_hands();
 
-		void	play_shoe();
+		bool	play_shoe();
 		void	new_shoe();
 		void	new_shoe(int seed);
 	private:
 		Hand	dealer;
-		Player	player;
+		Player	&player;
 		Shoe	shoe;
 };
 

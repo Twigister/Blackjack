@@ -20,24 +20,24 @@ bool	Player::bet(int amount)
 
 void	Player::win(unsigned int wager)
 {
-	// std::cout << "It's a win: " << wager << std::endl;
+	std::cout << " wins: " << wager << std::endl;
 	stack += wager * 2;
 }
 
 void	Player::blackjack(unsigned int wager)
 {
-	// std::cout << "It's a BLACKJACK" << std::endl;
+	std::cout << " is a BLACKJACK and wins: " << wager * 3 / 2 << std::endl;
 	stack += wager * 5 / 2;
 }
 
 void	Player::lose(void)
 {
-	std::cout << "It's a loss" << std::endl;
+	std::cout << " looses" << std::endl;
 }
 
 void	Player::push(unsigned int wager)
 {
-	std::cout << "It's a push" << std::endl;
+	std::cout << " pushes" << std::endl;
 	stack += wager;
 }
 
